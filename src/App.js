@@ -7,6 +7,8 @@ import Proyectos from './components/proyectos/Proyectos';
 
 import ProyectoState from './context/proyectos/ProyectoState';
 import TareaState from './context/tareas/TareaState';
+import AlertaState from './context/alertas/alertaState'
+
 
 
 import {BrowserRouter as Router, Switch, Route} from  'react-router-dom'
@@ -15,6 +17,7 @@ function App() {
   return(
     <ProyectoState>
       <TareaState>
+        <AlertaState>
         <Router>
           <Switch>
             <Route exact path="/" component={Login}/>
@@ -22,6 +25,7 @@ function App() {
             <Route exact path="/proyectos" component={Proyectos}/>
           </Switch>
         </Router>
+        </AlertaState>
       </TareaState>
     </ProyectoState>
     );
