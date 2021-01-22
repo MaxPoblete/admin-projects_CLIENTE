@@ -1,7 +1,26 @@
-import React,{useState} from 'react';
+import React,{useContext, useState, useEffect} from 'react';
 import {Link} from 'react-router-dom'
+import AlertaContext from '../../context/alertas/alertaContext'
+import AuthContext from '../../context/authContext/authContext'
 
-const NuevaCuenta  = () => {
+const NuevaCuenta  = (props) => {
+
+    //extraer los valores del context
+    const alertaContext = useContext(AlertaContext);
+    const {alerta, mostrarAlerta} = alertaContext;
+
+    const authContext = useContext(AuthContext);
+    const {mensaje, autenticado, registrarUsuario} = authContext;
+
+    //en caso de que el usuario se haya autenticado o registrado o sea un registro duplicado
+    useEffect(() =>{
+        if(autenticado){
+            props.history.push('/proyectos')
+        }
+        if(mensaje){
+            mostrarAlerta(mensaje.msg, mensaje.categoria);
+        }
+    },[mensaje, autenticado, props.history]);
 
     //state para iniciar session
     const[usuario, guardarUsuario]= useState({
@@ -29,17 +48,47 @@ const NuevaCuenta  = () => {
 
         //validar que no haya campos basios
 
+        if(nombre.trim() === '' ){
+            mostrarAlerta('Ingrese nombre Es Obligaririo', 'alerta-error');
+            return;
+        }
+        if(email.trim() === '' ){
+            mostrarAlerta('Ingrese Email Es Obligaririo', 'alerta-error');
+            return;
+        }
+        if(password.trim() === '' ){
+            mostrarAlerta('Ingrese Password Es Obligaririo', 'alerta-error');
+            return;
+        }
         //password minimo de 6 carecteres
+        if(password.length < 6 ){
+            mostrarAlerta('La password debe tener al menos 6 caracteres','alerta-error')
+            return;
+        }
 
         //los dos password sean iguales 
+        if(confirmar.trim() === ''){
+            mostrarAlerta('ingrese confirmar password','alerta-error');
+        }
+        if(confirmar !== password){
+            mostrarAlerta('Los password no coinciden ','alerta-error');
+        }else{
+            mostrarAlerta('agregando cuentan', 'alerta-ok')
+        }
 
         //pasarlo al action
+        registrarUsuario({
+            nombre,
+            email,
+            password
+        })
     }
 
     return(
         <div className="form-usuario">
+            {alerta ? (<div className={`alerta ${alerta.categoria}`}>{alerta.msg}</div>) : null}
             <div className="contenedor-form sombra-dark">
-                <h1>Obtener Una Cuenta</h1>
+                <h1>Obtener Una Cuenta</h1> 
                 <form
                 onSubmit={onsubmit}
                 >
